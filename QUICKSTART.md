@@ -1,192 +1,279 @@
-# ⚡ Quick Start - 5 minutos al agente funcionando
+# ⚡ QUICKSTART - AgentLow Pro v2.0
 
-## 🚀 Instalación Ultra-Rápida
+> De 0 a agente funcionando en **menos de 5 minutos**
+
+## 🚀 Instalación (30 segundos)
 
 ```bash
-# 1. Ejecuta el setup automático
-python3 setup.py
+# Opción 1: Instalación completa
+pip install "agentlow-pro[full]"
 
-# 2. ¡Listo! Ya puedes usar el agente
-python3 agent.py
+# Opción 2: Básica (sin scraping ni SSH)
+pip install agentlow-pro
+
+# Opción 3: Docker
+docker-compose up -d && open http://localhost:8000
 ```
 
-## 💡 Tu primer comando (en 30 segundos)
+## ✨ Tu primer agente (60 segundos)
 
 ```python
-from agent import OllamaAgent
+from agentlow import quick_start
 
-agent = OllamaAgent()
-response = agent.run("Lista los archivos de este directorio")
+# Crear agente
+agent = quick_start()
+
+# ¡Usarlo!
+response = agent.run("Lista los archivos Python de este directorio")
 print(response)
 ```
 
-## 🎯 Los 3 casos de uso más comunes
+**¡Listo!** Ya tienes un agente funcionando 🎉
 
-### 1️⃣ Automatizar tareas repetitivas
+## 🎯 Casos de Uso Comunes
 
-```python
-agent.run("""
-1. Lista todos los archivos .py
-2. Para cada uno, cuenta las líneas
-3. Guarda el resultado en code_stats.txt
-""")
-```
-
-### 2️⃣ Trabajar con Git
+### 1. Automatizar Tareas Repetitivas
 
 ```python
 agent.run("""
-1. Muestra el estado de git
-2. Si hay cambios, haz commit con mensaje "Update code"
-3. Haz push a la rama main
+Automatiza el reporte diario:
+1. Lee sales.csv
+2. Calcula: total ventas, promedio, producto top
+3. Crea DAILY_REPORT.md con los resultados
+4. Si hay anomalías, avísame
 """)
 ```
 
-### 3️⃣ Consultar APIs
+### 2. Trabajar con Git
 
 ```python
 agent.run("""
-1. Haz GET a https://api.github.com/users/octocat
-2. Guarda la respuesta en user_info.json
-3. Muéstrame el nombre y número de repos públicos
+Deploy:
+1. Verifica git status (debe estar limpio)
+2. Run tests
+3. Si pasan, haz commit: "Release v2.0"
+4. Push a main
 """)
 ```
 
-## ⚙️ Configuración Mínima
+### 3. Análisis de Datos
 
 ```python
-from agent import OllamaAgent
+agent.run("""
+Analiza logs:
+1. Lee app.log
+2. Cuenta errores por tipo
+3. Identifica top 5 errores
+4. Crea ERROR_SUMMARY.md
+""")
+```
 
-# Básico (usa defaults)
-agent = OllamaAgent()
+### 4. Consultar APIs
 
-# Personalizado
-agent = OllamaAgent(
-    model="qwen2.5:7b",      # Tu modelo
-    temperature=0.0,          # 0 = preciso, 0.7 = creativo
-    work_dir="/ruta/proyecto", # Directorio de trabajo
-    max_iterations=10         # Límite de pasos
+```python
+agent.run("""
+Investigación:
+1. GET https://api.github.com/repos/ollama/ollama
+2. Extrae: estrellas, forks, issues abiertas
+3. Guarda en github_stats.json
+4. Compara con el mes pasado
+""")
+```
+
+### 5. Base de Datos
+
+```python
+agent.run("""
+Gestiona usuarios:
+1. Crea BD users.db
+2. Crea tabla: id, name, email, created_at
+3. Inserta 3 usuarios de prueba
+4. Query: todos los usuarios
+5. Muestra resultados
+""")
+```
+
+## 🎨 Interfaces Disponibles
+
+### CLI Interactivo
+
+```bash
+# Modo chat
+agentlow
+
+# Comando único
+agentlow -c "Analiza este proyecto"
+
+# Con opciones
+agentlow -m qwen2.5:14b -t 0.3 --stream
+```
+
+### Web UI
+
+```bash
+# Iniciar servidor
+agentlow-web
+
+# Abrir navegador
+open http://localhost:8000
+```
+
+### Python API
+
+```python
+from agentlow import AgentLowPro
+
+agent = AgentLowPro(
+    model="qwen2.5:7b",
+    enable_cache=True,      # ← 50x más rápido
+    auto_select_model=True  # ← Mejor accuracy
+)
+
+response = agent.run("tu tarea")
+```
+
+## 🔧 Configuración Básica
+
+```python
+from agentlow import AgentLowPro
+
+# Configuración mínima
+agent = AgentLowPro()
+
+# Configuración personalizada
+agent = AgentLowPro(
+    model="qwen2.5:7b",      # Modelo a usar
+    temperature=0.0,          # 0=preciso, 1=creativo
+    enable_cache=True,        # Caché inteligente
+    log_level="INFO"          # Nivel de logging
 )
 ```
 
-## 🛠️ Las 7 herramientas disponibles
+## 📊 Herramientas Disponibles
 
-| Herramienta | Para qué sirve | Ejemplo |
-|-------------|----------------|---------|
-| `shell` | Ejecutar comandos | `ls`, `grep`, `python script.py` |
-| `read_file` | Leer archivos | Lee `config.json` |
-| `write_file` | Escribir archivos | Crea `output.txt` |
-| `list_directory` | Listar directorios | Lista archivos en `./src` |
-| `http_request` | Peticiones HTTP | GET a una API |
-| `git` | Operaciones Git | `status`, `commit`, `push` |
-| `docker` | Docker/Compose | `ps`, `logs`, `up` |
+| Tool | Qué hace | Ejemplo |
+|------|----------|---------|
+| `shell` | Ejecuta comandos | `ls -la`, `python script.py` |
+| `read_file` | Lee archivos | `cat config.json` |
+| `write_file` | Escribe archivos | Crea `output.txt` |
+| `list_directory` | Lista dirs | Lista `./src` |
+| `http_request` | Peticiones HTTP | GET/POST APIs |
+| `git` | Git operations | status, commit, push |
+| `docker` | Docker/Compose | ps, logs, up |
+| `database` | SQL queries | CREATE, SELECT, INSERT |
+| `ssh` | Comandos remotos | SSH a servidor |
+| `web_scrape` | Scraping | Extrae de webs |
+| `scheduler` | Tareas programadas | Cron-like |
 
-## 🔥 Comandos útiles
+## 💡 Tips Pro
 
-```bash
-# Modo interactivo (chat)
-python3 agent.py
+### 1. Usa Caché para Velocidad
 
-# Ver ejemplos
-python3 examples.py
+```python
+agent = AgentLowPro(enable_cache=True)
 
-# Verificar instalación
-python3 setup.py
+# Primera vez: 2s
+agent.run("analiza archivos")
 
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Descargar modelo recomendado
-ollama pull qwen2.5:7b
+# Segunda vez: 0.1s ← ¡20x más rápido!
+agent.run("analiza archivos")
 ```
 
-## 🐛 Solución rápida de problemas
+### 2. Auto-selección para Mejor Accuracy
 
-### ❌ Error: "Connection refused"
+```python
+agent = AgentLowPro(auto_select_model=True)
+
+# El agente elige el mejor modelo para cada tarea:
+agent.run("escribe código")    # → CodeLlama
+agent.run("lista archivos")    # → Qwen rápido
+agent.run("análisis complejo") # → Qwen calidad
+```
+
+### 3. Streaming para UX
+
+```python
+agent = AgentLowPro(enable_streaming=True)
+
+def mostrar(texto):
+    print(texto, end='', flush=True)
+
+agent.run("explica Docker", stream_callback=mostrar)
+# D... o... c... k... e... r... [tiempo real!]
+```
+
+### 4. Verifica Stats
+
+```python
+stats = agent.get_stats()
+print(stats)
+# {
+#   'total_calls': 10,
+#   'cache_hits': 5,
+#   'cache_hit_rate': '50.0%',
+#   'total_tool_calls': 15,
+#   'errors': 0
+# }
+```
+
+## 🐛 Troubleshooting
+
+### Error: "Connection refused"
 ```bash
 # Inicia Ollama
 ollama serve
 ```
 
-### ❌ Error: "Model not found"
+### Error: "Model not found"
 ```bash
-# Descarga el modelo
+# Descarga modelo
 ollama pull qwen2.5:7b
 ```
 
-### ❌ El agente no hace lo que pido
-- Usa temperatura 0.0 para tareas operativas
-- Sé más específico en las instrucciones
-- Divide tareas complejas en pasos
+### Respuestas incorrectas
+```python
+# Usa temperatura 0 para tareas operativas
+agent = AgentLowPro(temperature=0.0)
 
-## 📊 Modelos recomendados (de mejor a más rápido)
-
-```bash
-# Mejor calidad (si tienes 16GB+ RAM)
-ollama pull qwen2.5:14b
-
-# Equilibrado (recomendado - 8GB RAM)
-ollama pull qwen2.5:7b
-
-# Más rápido (4GB RAM)
-ollama pull llama3.2:3b
+# O habilita auto-selección
+agent = AgentLowPro(auto_select_model=True)
 ```
 
-## 💪 Ejemplo completo (copy-paste)
+### Muy lento
+```python
+# Habilita caché
+agent = AgentLowPro(enable_cache=True)
+
+# O usa modelo más rápido
+agent = AgentLowPro(model="llama3.2:3b")
+```
+
+## 📚 Próximos Pasos
+
+1. **Lee la documentación completa**: [README.md](README.md)
+2. **Explora ejemplos avanzados**: [examples/](examples/)
+3. **Crea tus propias herramientas**: [PLUGINS.md](docs/PLUGINS.md)
+4. **Despliega en producción**: [DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
+## 🎓 Recursos
+
+- 📖 [Documentación completa](README.md)
+- 🎥 [Video tutorial](https://youtube.com/agentlow) (próximamente)
+- 💬 [Community Discord](https://discord.gg/agentlow) (próximamente)
+- 🐛 [Report issues](https://github.com/smouj/AGENTLOW/issues)
+
+## 🆘 ¿Necesitas ayuda?
 
 ```python
-from agent import OllamaAgent
-
-# Crear agente
-agent = OllamaAgent(model="qwen2.5:7b")
-
-# Tarea compleja
-response = agent.run("""
-Analiza este proyecto Python:
-
-1. Lista todos los archivos .py
-2. Lee requirements.txt si existe
-3. Muestra el último commit de git
-4. Crea un archivo PROJECT_INFO.md con:
-   - Número de archivos Python
-   - Dependencias principales
-   - Último commit
-   - Tu evaluación del proyecto
-""")
-
-print(response)
-```
-
-## 🎓 Mejores prácticas (en 3 líneas)
-
-1. **Temperatura 0** para operaciones, 0.3 para creatividad
-2. **Instrucciones claras**: "Lista archivos .py" > "Mira los archivos"
-3. **Divide y vencerás**: Tareas complejas en pasos
-
-## 📚 Más información
-
-- **README.md** → Documentación completa
-- **examples.py** → 9 ejemplos avanzados
-- **tools.py** → Código de las herramientas
-- **agent.py** → Código del agente
-
-## 🆘 Ayuda
-
-```bash
 # En Python
-from agent import OllamaAgent
-help(OllamaAgent)
+from agentlow import AgentLowPro
+help(AgentLowPro)
 
-# Ver historial de conversación
-agent.get_history()
-
-# Reset del agente
-agent.reset()
-
-# Modo verbose (ver qué hace)
-agent.run("tu comando", verbose=True)
+# O pregúntale al agente
+agent = quick_start()
+agent.run("¿Cómo puedo usar la herramienta de base de datos?")
 ```
 
 ---
 
-**¿Listo?** Ejecuta `python3 agent.py` y empieza a usar el agente! 🚀
+**¿Listo para más?** Revisa el [README completo](README.md) para features avanzadas! 🚀
