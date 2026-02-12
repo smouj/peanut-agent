@@ -2,7 +2,7 @@
 Secure tool executor for Peanut Agent.
 
 Key security properties:
-- NO shell=True anywhere - all subprocess calls use argument lists
+- No shell invocation anywhere — all subprocess calls use argument lists
 - Path traversal prevention on every file operation
 - Allowlist-based command validation
 - Forbidden pattern detection
@@ -110,7 +110,7 @@ class ToolExecutor:
         return tokens
 
     def _shell(self, args: dict[str, Any]) -> dict[str, Any]:
-        """Execute a shell command WITHOUT shell=True."""
+        """Execute a shell command using subprocess argument lists (no shell)."""
         cmd_string = args.get("cmd", "")
         try:
             tokens = self._validate_command(cmd_string)
@@ -256,7 +256,7 @@ class ToolExecutor:
         except requests.RequestException as exc:
             return {"error": f"HTTP error: {exc}"}
 
-    # -- Git (safe, no shell=True) --
+    # -- Git (safe, uses argument lists) --
 
     _GIT_ALLOWED_ACTIONS = frozenset({
         "status", "log", "diff", "branch", "add",
@@ -345,7 +345,7 @@ class ToolExecutor:
 
         return {"error": f"Unhandled git action: {action}"}
 
-    # -- Docker (safe, no shell=True) --
+    # -- Docker (safe, uses argument lists) --
 
     _DOCKER_ALLOWED_ACTIONS = frozenset({
         "ps", "logs", "images",

@@ -45,7 +45,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify no shell=True in source
         run: |
-          if grep -rn "shell=True" src/; then
+          # Search only .py files, exclude comments and docstrings
+          MATCHES=$(grep -rn --include='*.py' 'shell=True' src/ | grep -vE '^\s*#|"""' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "$MATCHES"
             echo "FAIL: shell=True found in source code"
             exit 1
           fi

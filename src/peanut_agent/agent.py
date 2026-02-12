@@ -292,7 +292,7 @@ class PeanutAgent:
         except OSError:
             pass
 
-        # Git branch (safe subprocess, no shell=True)
+        # Git branch (safe subprocess, uses argument list)
         try:
             result = subprocess.run(
                 ["git", "branch", "--show-current"],
