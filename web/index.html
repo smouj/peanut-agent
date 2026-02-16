@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🥜 Peanut Gateway (PRO)</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#121924;
+      --text:#e6edf3;
+      --muted:#9aa4b2;
+      --accent:#f5c542;
+      --good:#2ea043;
+      --bad:#f85149;
+      --border:#243044;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); }
+    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      padding:18px 20px; background:linear-gradient(180deg, rgba(245,197,66,0.08), rgba(245,197,66,0.02));
+      border:1px solid var(--border); border-radius:16px;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:44px; height:44px; border-radius:12px; display:grid; place-items:center;
+      background:rgba(245,197,66,0.14); border:1px solid rgba(245,197,66,0.35);
+      font-size:22px;
+    }
+    h1{ margin:0; font-size:18px; letter-spacing:0.2px; }
+    .sub{ margin:2px 0 0; color:var(--muted); font-size:13px; }
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    select, button, input{
+      background:var(--panel); color:var(--text); border:1px solid var(--border);
+      padding:10px 12px; border-radius:12px; font-size:14px;
+    }
+    button{ cursor:pointer; }
+    button.primary{ border-color:rgba(245,197,66,0.45); }
+    button.primary:hover{ box-shadow:0 0 0 3px rgba(245,197,66,0.12); }
+    .grid{
+      display:grid; grid-template-columns: 1fr; gap:16px; margin-top:16px;
+    }
+    .console{
+      background:var(--panel); border:1px solid var(--border); border-radius:16px;
+      overflow:hidden;
+    }
+    .console-header{
+      display:flex; align-items:center; justify-content:space-between; padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      font-family:var(--mono); font-size:12px; color:var(--muted);
+    }
+    .console-body{
+      height:60vh; min-height:420px;
+      overflow:auto; padding:14px;
+      font-family:var(--mono); font-size:13px; line-height:1.45;
+      background: radial-gradient(600px 400px at 20% 10%, rgba(245,197,66,0.07), transparent 60%),
+                  radial-gradient(700px 450px at 80% 20%, rgba(46,160,67,0.05), transparent 60%),
+                  var(--panel);
+    }
+    .msg{ margin:0 0 12px; white-space:pre-wrap; word-break:break-word; }
+    .tag{
+      display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--border);
+      margin-right:8px; font-size:11px;
+    }
+    .tag.user{ color:var(--accent); border-color:rgba(245,197,66,0.35); }
+    .tag.bot{ color:#8bd5ff; border-color:rgba(139,213,255,0.25); }
+    .tag.sys{ color:var(--muted); }
+    .inputbar{
+      display:flex; gap:10px; padding:12px 14px; border-top:1px solid var(--border);
+      background:rgba(0,0,0,0.12);
+    }
+    #text{ flex:1; font-family:var(--mono); }
+    .status{
+      margin-top:10px; color:var(--muted); font-size:12px;
+    }
+    a{ color:var(--accent); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">🥜</div>
+        <div>
+          <h1>Peanut Gateway (PRO)</h1>
+          <div class="sub">Consola web local para hablar con tus agentes — Ollama + Tool Calling + Reflection + Memory</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <select id="session"></select>
+        <button class="primary" id="new">+ Nueva sesión</button>
+        <button id="reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="console">
+        <div class="console-header">
+          <div>WS: <span id="wsurl"></span></div>
+          <div>🥜 Peanuts: <span id="peanuts">0</span></div>
+        </div>
+        <div class="console-body" id="log"></div>
+        <div class="inputbar">
+          <input id="text" placeholder="Escribe tu mensaje… (Enter para enviar)" autocomplete="off"/>
+          <button class="primary" id="send">Enviar</button>
+        </div>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+
+<script>
+  const log = document.getElementById('log');
+  const statusEl = document.getElementById('status');
+  const sessionSel = document.getElementById('session');
+  const wsurlEl = document.getElementById('wsurl');
+  const peanutsEl = document.getElementById('peanuts');
+  const textEl = document.getElementById('text');
+
+  let ws = null;
+
+  function addLine(kind, text){
+    const p = document.createElement('p');
+    p.className = 'msg';
+    const tag = document.createElement('span');
+    tag.className = 'tag ' + kind;
+    tag.textContent = kind === 'user' ? 'YOU' : (kind === 'bot' ? 'AGENT' : 'SYS');
+    p.appendChild(tag);
+    p.appendChild(document.createTextNode(text));
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function api(path, opts={}){
+    const r = await fetch(path, opts);
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  }
+
+  async function refreshSessions(){
+    const data = await api('/api/sessions');
+    sessionSel.innerHTML = '';
+    for(const s of data.sessions){
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      sessionSel.appendChild(opt);
+    }
+    if(!data.sessions.length){
+      await api('/api/new', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name:'main'})});
+      return refreshSessions();
+    }
+    sessionSel.value = data.current;
+  }
+
+  function connect(){
+    const s = sessionSel.value;
+    if(ws) ws.close();
+    const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+    const url = `${proto}://${location.host}/ws/${encodeURIComponent(s)}`;
+    wsurlEl.textContent = url;
+    ws = new WebSocket(url);
+
+    ws.onopen = () => {
+      statusEl.textContent = '✅ Conectado';
+      addLine('sys', `Conectado a sesión "${s}"`);
+    };
+    ws.onmessage = (ev) => {
+      try{
+        const msg = JSON.parse(ev.data);
+        if(msg.type === 'reply'){
+          peanutsEl.textContent = String(msg.peanuts ?? 0);
+          addLine('bot', msg.reply ?? '');
+        }else if(msg.type === 'sys'){
+          addLine('sys', msg.message ?? '');
+        }
+      }catch(e){
+        addLine('sys', ev.data);
+      }
+    };
+    ws.onclose = () => {
+      statusEl.textContent = '⚠️ Desconectado';
+    };
+    ws.onerror = () => {
+      statusEl.textContent = '❌ Error de WebSocket';
+    };
+  }
+
+  async function send(){
+    const t = textEl.value.trim();
+    if(!t) return;
+    addLine('user', t);
+    textEl.value = '';
+    ws.send(JSON.stringify({message: t}));
+  }
+
+  document.getElementById('send').onclick = send;
+  document.getElementById('new').onclick = async () => {
+    const name = prompt('Nombre de la sesión:', 'agent-' + Math.floor(Math.random()*1000));
+    if(!name) return;
+    await api('/api/new', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name})});
+    await refreshSessions();
+    connect();
+  };
+  document.getElementById('reset').onclick = async () => {
+    await api('/api/reset', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name: sessionSel.value})});
+    addLine('sys', 'Historial reseteado.');
+  };
+  sessionSel.onchange = connect;
+  textEl.addEventListener('keydown', (e) => { if(e.key === 'Enter') send(); });
+
+  (async ()=>{
+    await refreshSessions();
+    connect();
+  })();
+</script>
+</body>
+</html>

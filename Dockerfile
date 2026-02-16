@@ -1,47 +1,26 @@
 FROM python:3.11-slim
 
-# Metadatos
-LABEL maintainer="AgentLow Pro"
-LABEL description="Sistema de agente local con IA avanzado"
+LABEL maintainer="Smouj + Peanut Agent"
+LABEL description="🥜 PEANUT-AGENT PRO v0.1 — Gateway + Agent (local-first)"
 
-# Instalar dependencias del sistema
-RUN apt-get update && apt-get install -y \
+# Dependencias base (ligeras)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     sqlite3 \
-    openssh-client \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar Ollama (opcional - puede correr en host)
-# RUN curl -fsSL https://ollama.com/install.sh | sh
-
-# Crear usuario no-root
-RUN useradd -m -u 1000 agentlow
-
-# Directorio de trabajo
 WORKDIR /app
 
-# Copiar requirements
-COPY requirements.txt .
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Instalar dependencias Python
-RUN pip install --no-cache-dir -r requirements.txt
+COPY . /app
 
-# Copiar código
-COPY src/ ./src/
-COPY setup.py .
+ENV PYTHONUNBUFFERED=1
+ENV OLLAMA_URL=http://ollama:11434
 
-# Instalar el paquete
-RUN pip install -e .
+EXPOSE 18789
 
-# Cambiar a usuario no-root
-USER agentlow
-
-# Crear directorio de trabajo
-RUN mkdir -p /home/agentlow/workspace
-
-# Puerto para web UI
-EXPOSE 8000
-
-# Comando por defecto
-CMD ["python", "-m", "agentlow.cli"]
+CMD ["python", "web_ui.py"]

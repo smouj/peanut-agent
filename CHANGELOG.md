@@ -1,20 +1,10 @@
-# CHANGELOG - AgentLow Pro
+# Changelog — 🥜 PEANUT-AGENT PRO
 
-## v2.0.0 - 2026-02-11
-- **Mejoras principales**:
-  - Caché inteligente (hasta 50x más rápido).
-  - Streaming de respuestas.
-  - Selección automática de modelo por tarea.
-  - Sistema de plugins extensible.
-  - Logging profesional con niveles.
-  - Interfaces: CLI (Rich), Web UI (FastAPI), REST API.
-- **Herramientas nuevas**: database (SQLite), ssh, web_scrape, scheduler.
-- **Seguridad**: Allowlist, path protection, timeouts.
-- **Deployment**: Docker con GPU, CI/CD con GitHub Actions.
-- **Testing**: Suite con pytest y coverage.
-- **Estructura**: Paquete Python con src/, listo para PyPI.
-
-## v1.0.0 - Fecha inicial
-- Versión base con tool calling básico.
-- Herramientas core: shell, files, http, git, docker.
-- Integración con Ollama.
+## v0.1 (2026-02-16)
+- Añadido: Reflection Loop (`reflection.py`) con esquema Pydantic + fallback heurístico.
+- Añadido: Peanut Memory (`memory.py`) RAG local ligero (JSONL + embeddings Ollama).
+- Modificado: `agent.py` integrado con memory+reflection y gamificación.
+- Añadido: Wizard bonito (`wizard.py`) con instalación limpia y checks.
+- Añadido: Gateway consola (`gateway.py`) multi-sesión.
+- Añadido: Gateway web (`web_ui.py` + `web/index.html`) con WebSocket.
+- Añadido: Dockerfile + docker-compose simplificados para Ollama + gateway.
