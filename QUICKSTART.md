@@ -1,36 +1,34 @@
-# 🥜 QUICKSTART — PEANUT-AGENT PRO
+# 🚀 QUICKSTART — PEANUT-AGENT PRO v0.1
 
-## Opción A: Local (recomendado)
+## Requisitos
+- Python 3.10+
+- Git
 
-1) Instala dependencias:
+## Instalación (recomendada)
 
 ```bash
-python -m pip install -r requirements.txt
+git clone https://github.com/smouj/PEANUT-AGENT.git
+cd PEANUT-AGENT
+bash install.sh
 ```
 
-2) Ejecuta wizard:
+En Windows (PowerShell):
 
-```bash
-python wizard.py
+```powershell
+git clone https://github.com/smouj/PEANUT-AGENT.git
+cd PEANUT-AGENT
+powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-3) Abre gateway:
+## Abrir Gateway
 
-- Consola: `python gateway.py`
-- Web: `python web_ui.py` → http://127.0.0.1:18789/
-
-## Opción B: Docker Compose
-
+Consola:
 ```bash
-docker compose up --build
+python gateway.py
 ```
 
-- Ollama: http://127.0.0.1:11434
-- Gateway: http://127.0.0.1:18789
-
-## Modelos sugeridos
+Web:
 ```bash
-ollama pull qwen2.5:7b
-ollama pull llama3
-ollama pull nomic-embed-text
+python web_ui.py
+# http://127.0.0.1:18789/
 ```
